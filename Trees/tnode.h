@@ -17,10 +17,11 @@ class Tree
     Node* root;
     char num,maxnum;		//счётчик тегов и максимальный тег
     int maxrow, offset;		//максимальная глубина, смещение корня
+    int currdepth; //глубина фактическая
     char **SCREEN;	// память для выдачи на экран
     void clrscr();	// очистка рабочей памяти
 
-    //констр.
+    //конструкторы
     Tree(const Tree&);
     Tree(Tree&&);
     Tree operator = (const Tree&) const;
@@ -28,7 +29,7 @@ class Tree
     //методы
     Node* MakeNode(int depth); // создание поддерева
     void OutNodes(Node * v, int r, int c); // выдача поддерева
-    void innerAlg(Node * v,int*);
+    void innerAlg(Node * v,int depth, int* count);
 public:  
     Tree(char num, char maxnum,int maxrow);
     ~Tree();

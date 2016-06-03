@@ -3,28 +3,30 @@
 
 using namespace std;
 
-Tree::Tree(char nm, char mxm, int maxr):num(nm), maxnum(mxm), maxrow(maxr), offset(40), root(nullptr), SCREEN(new char * [maxrow])
+Tree::Tree(char nm, char mxm, int maxr):num(nm), maxnum(mxm), maxrow(maxr), offset(40), currdepth(0), root(nullptr), SCREEN(new char * [maxrow])
 {
     for(int i = 0; i < maxrow; i++) SCREEN[ i ] = new char[80];
 }
-Tree :: ~Tree( )
+Tree :: ~Tree()
 {
     for(int i = 0; i < maxrow; i++) delete [ ]SCREEN[i];
     delete [ ]SCREEN;
     delete root;
 }
 
-void Tree::innerAlg(Node *v, int* ptrcount)
+void Tree::innerAlg(Node *v, int depth,int* ptrcount)
 {
-    if(v->left) innerAlg(v->left,ptrcount);
+    if(depth == currdepth) (*ptrcount)++;
+    if(v->left) innerAlg(v->left,depth+1,ptrcount);
     cout << v->d << '_';
-    if(v->right) innerAlg(v->right,ptrcount);
+    if(v->right) innerAlg(v->right,depth+1,ptrcount);
 }
 
 int Tree::CountLastLeafs()
 {
     int count = 0;
-    innerAlg(root,&count);
+    cout << "¬нутренний обход дерева: ";
+    innerAlg(root,0,&count);
     return count;
 }
 
@@ -40,6 +42,7 @@ Node * Tree :: MakeNode(int depth)
         //v->d = num++;          //вариант Ч во внутреннем
         v->right = MakeNode(depth+1);
         v->d = num++;		// вариант Ч в обратном
+        if(depth > currdepth) currdepth = depth; //запоминаем глубину дерева
     }
     return v;
 }

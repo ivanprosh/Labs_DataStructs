@@ -19,6 +19,7 @@ struct list
     list* next;
     list(char init):el(init),next(0){}
     list(){}
+    ~list(){if(next) delete next;}
 };
 list *LA,*LB,*LC,*LD,*LE;
 
@@ -117,9 +118,10 @@ void arrays()
     char temp1[max_size],temp2[max_size],result[max_size];
     compare(temp1,Set_A,Set_B);
     compare(temp2,Set_C,Set_D);
-    printSet(temp1);
-    printSet(temp2);
+    //printSet(temp1);
+    //printSet(temp2);
     diff(Set_E,temp1,temp2);
+    cout << "Результирующее множество E: ";
     printSet(Set_E);
 }
 list* arrToList(char* buf)
@@ -145,25 +147,37 @@ void lists()
     LB = arrToList(Set_B);
     LC = arrToList(Set_C);
     LD = arrToList(Set_D);
-//    LprintSet(LA);
-//    LprintSet(LB);
-//    LprintSet(LC);
-//    LprintSet(LD);
     list* temp1 = Lcompare(LA,LB);
-    LprintSet(temp1);
+    //LprintSet(temp1);
     list* temp2 = Lcompare(LC,LD);
-    LprintSet(temp2);
+    //LprintSet(temp2);
     LE = diff(temp1,temp2);
+    cout << "Результирующее множество E: ";
     LprintSet(LE);
+    delete LA;
+    delete LB;
+    delete LC;
+    delete LD;
 }
 
 void task()
 {
-    //Множество, содержащее буквы, общие для A и B, но не являющиеся общими для C и D
-    // E = (A ? B) \ (C ? D)
-    cout << "Результат при массивах" << endl;
+    cout<<"Исходные данные для задания"<<endl;
+    cout<<"A: ";
+    printSet(Set_A);
+    cout<<"B: ";
+    printSet(Set_B);
+    cout<<"C: ";
+    printSet(Set_C);
+    cout<<"D: ";
+    printSet(Set_D);
+
+    cout<< "Множество, содержащее буквы, общие для A и B, но не являющиеся общими для C и D" << endl;
+    //E = (A ? B) \ (C ? D) - по всем вопросам по решению пиши на
+    //                        i v a n p r o s h [c о б а к а] g m a i l . c o m
+    cout << "Результат при использовании массивов" << endl;
     arrays();
-    cout << "Результат при списках" << endl;
+    cout << "Результат при использовании списков" << endl;
     lists();
 }
 
@@ -196,7 +210,6 @@ void userFilling()
 
     cout<< "Введите данные множества А" <<endl;
     fillingSet(Set_A,max_size);
-    printSet(Set_A);
     cout<< "Введите данные множества B" <<endl;
     fillingSet(Set_B,max_size);
     cout<< "Введите данные множества C" <<endl;
