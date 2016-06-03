@@ -2,4 +2,5 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     Sets \
-    Trees
+    Trees \
+    Graphs
