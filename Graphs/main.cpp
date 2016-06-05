@@ -8,8 +8,18 @@
 
 using namespace std;
 
+class Vertex {
+public:
+    enum color{white,gray,black};
+    short d, //discover time
+          f; //finish time
+    color curcolor;
+    Vertex* p;
+    Vertex():d(0),f(0),p(nullptr),curcolor(white) {}
+};
+
 class Node {
-    int d;
+    int vertex;
     Node * next;
 public:
     Node( ){ next = NULL; }
@@ -22,25 +32,55 @@ char Ch(int s) { return s+'a'; }
 
 class GR {
     Node ** LIST;
-    int num, * NUM, * L, * STACK, ust, n, m;
+    int num,
+        n,    //кол-во вершин
+        m,    //кол-во ребер
+        time; //время обхода в глубину
+    Vertex *L;   //указатель на массив вершин
 public:
-    void DBL (int v, int p);
+    void DBL (int v); //рекурсивная функция обхода
     void Make (int [ MaxV ][ MaxV ]);
-    void DBL_Exec( );
+    void DBL_Exec(); //старт алг.
     GR(int);
     ~GR( );
 };
 
-GR::GR(int MaxV) : num(0), ust(0), n(0), m(0), LIST(new Node * [ MaxV ]), NUM(new int[ MaxV ]), L(new int[ MaxV ]), STACK(new int[ MaxV ]) {}
-GR :: ~GR() {delete []STACK; delete []L; delete []NUM; delete []LIST; }
+GR::GR(int MaxV) : num(0),n(0),m(0), LIST(new Node * [ MaxV ]) {}
+GR :: ~GR() {delete []L; delete []LIST; }
 
 void GR :: DBL_Exec()
 {
-
+    time = 0;
+    for (int i = 0; i < n; i++) {
+      L[i].curcolor = Vertex::white;
+      L[i].p = NULL;
+    }
+//    num = 0; ust = 0;
+    for (int i = 0; i < n; i++)
+        if (L[i].curcolor == Vertex::white)
+            DBL(i);
+    
+//    cout << "\n" << "NUM="; for( int i = 0; i < n; i++) cout << VISITED[i] << " ";
+//    cout << "\n" << "  L="; for(int i=0; i<n; i++) cout << L[ I ] << " ";
 }
-void GR :: DBL (int v, int p)
-{
 
+void GR :: DBL (int v)
+{ 
+    time++;
+    L[v].d = time;
+    L[v].curcolor = Vertex::gray;
+    for (Node* u = LIST[ v ]; u ; u = u->next)
+    { 
+        if (L[u->vertex].curcolor == Vertex::white)
+        {
+            L[u->vertex].p = &L[v];
+            DBL(u->vertex);
+        }
+    }
+    L[v].curcolor = Vertex::black;
+    time++;
+    L[v].f = time;
+    //cout << " < " << v << '=' << VISITED[ v ] << '/' << L[ v ];
 }
 
 void GR :: Make(int G[ MaxV ][ MaxV ])
@@ -58,7 +98,7 @@ void GR :: Make(int G[ MaxV ][ MaxV ])
             {
                 f++;
                 Node *v = new Node;
-                v->d = j;
+                v->vertex = j;
                 v->next = LIST[ i ];
                 LIST[ i ] = v;
                 cout << Ch( j );
@@ -68,11 +108,12 @@ void GR :: Make(int G[ MaxV ][ MaxV ])
         m += f;
         if (!(( ++ls ) % 10)) _getch();
     }
-    cout << "\n" << "| V |=" << n <<  " | E |=" << m/2;
+    L = new Vertex[ n ];
+    cout << "\n" << "| V |=" << n <<  " | E |=" << m;
 }
 int main()
 {
-    int i, j, f, n = 0, G[ MaxV ][ MaxV ];
+    int i, j, n = 0, G[ MaxV ][ MaxV ];
     char s[ 80 ];
     SetConsoleCP(1251);//для корректного отображения русских букв в консоли, кодировка windows cp-1251
     SetConsoleOutputCP(1251); //
