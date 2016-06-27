@@ -5,15 +5,22 @@
 #include <new>
 #include <conio.h>
 #include <ctime>
+#include <stdint.h>
 
 using namespace std;
 
 const int max_size = 20;
-char Set_A[max_size] = {'А','Г','П','\0'};
-char Set_B[max_size] = {'К','П','Р','Я','А','\0'};
-char Set_C[max_size] = {'Г','Э','М','П','\0'};
-char Set_D[max_size] = {'В','У','Я','Д','Н','К','Ж','М','П','\0'};
+char Set_A[max_size] = {'А','Г','П','Л','С','Е','Ь','Й','У','Ю','Ш','З','Х','\0'};
+char Set_B[max_size] = {'Б','М','Я','Ы','Р','Л','Д','Э','Ъ','Щ','Й','Ц','У','К','\0'};
+char Set_C[max_size] = {'Ц','З','Г','П','Ф','Ы','В','А','Ю','Б','Ь','Т','И','М','\0'};
+char Set_D[max_size] = {'Я','Ч','Ю','Б','О','Л','Ж','Д','Э','Ы','В','А','Й','У','\0'};
 char Set_E[max_size];
+
+const short bit_size = 32;
+bool bitSetA[bit_size];
+bool bitSetB[bit_size];
+bool bitSetC[bit_size];
+bool bitSetD[bit_size];
 
 struct list
 {
@@ -118,13 +125,18 @@ void arrays()
 {
     //сравнение массивов
     char temp1[max_size],temp2[max_size],result[max_size];
+    int start = clock();
     compare(temp1,Set_A,Set_B);
     compare(temp2,Set_C,Set_D);
     //printSet(temp1);
     //printSet(temp2);
     diff(Set_E,temp1,temp2);
+    int stop = clock();
     cout << "Результирующее множество E: ";
     printSet(Set_E);
+
+    std::cout << "Для вычисления понадобилось " << stop-start << " тиков времени или " << ((float)(stop-start)) / CLOCKS_PER_SEC << " секунд.n" << endl;
+
 }
 list* arrToList(char* buf)
 {
@@ -149,6 +161,7 @@ void lists()
     LB = arrToList(Set_B);
     LC = arrToList(Set_C);
     LD = arrToList(Set_D);
+    int start = clock();
     list* temp1 = Lcompare(LA,LB);
     //LprintSet(temp1);
     list* temp2 = Lcompare(LC,LD);
@@ -156,6 +169,9 @@ void lists()
     LE = diff(temp1,temp2);
     cout << "Результирующее множество E: ";
     LprintSet(LE);
+    int stop = clock();
+    std::cout << "Для вычисления понадобилось " << stop-start << " тиков времени или " << ((float)(stop-start)) / CLOCKS_PER_SEC << " секунд.n" << endl;
+
     delete LA;
     delete LB;
     delete LC;
@@ -175,16 +191,11 @@ void fillbits(char* source, bool* dest)
 
 void bits()
 {
-    const short bit_size = 256;
+
     //массивы битов
     bool temp1[bit_size],temp2[bit_size],result;
     memset(temp1,0,bit_size);
     memset(temp2,0,bit_size);
-
-    bool* bitSetA = new bool[bit_size];
-    bool* bitSetB = new bool[bit_size];
-    bool* bitSetC = new bool[bit_size];
-    bool* bitSetD = new bool[bit_size];
 
     memset(bitSetA,0,bit_size);
     memset(bitSetB,0,bit_size);
@@ -197,6 +208,7 @@ void bits()
     fillbits(Set_C,bitSetC);
     fillbits(Set_D,bitSetD);
 
+    int start = clock();
     int j = 0;
     for(int i=0;i<bit_size;i++)
     {
@@ -208,15 +220,48 @@ void bits()
            Set_E[j++] = result +'А';
         }
     }
+    int stop = clock();
 
     cout << "Результирующее множество E: "<<endl;;
     printSet(Set_E);
+    std::cout << "Для вычисления понадобилось " << stop-start << " тиков времени или " << ((float)(stop-start)) / CLOCKS_PER_SEC << " секунд.n" << endl;
 
-    delete bitSetA;
-    delete bitSetB;
-    delete bitSetC;
-    delete bitSetD;
+
 }
+void words()
+{
+    uint32_t wordSetA(0),wordSetB(0),wordSetC(0),wordSetD(0),temp1(0),temp2(0),result(0);
+    for(int i=0;i<bit_size;i++)
+    {
+        wordSetA |= bitSetA[i] << i;
+        wordSetB |= bitSetB[i] << i;
+        wordSetC |= bitSetC[i] << i;
+        wordSetD |= bitSetD[i] << i;
+        //wordSetA = wordSetA << 1;
+        //wordSetB = wordSetB << 1;
+       // wordSetC = wordSetC << 1;
+       // wordSetD = wordSetD << 1;
+    }
+
+    int start = clock();
+
+    temp1 = wordSetA & wordSetB;
+    temp2 = wordSetC & wordSetD;
+    result = temp1 & (~temp2);
+
+    int t(1),j(0);
+    for(int i=0;i<bit_size;i++)
+    {
+        if(result & (t<<i)) Set_E[j++] = i +'А';
+    }
+
+    int stop = clock();
+    cout << "Результирующее множество E: "<<endl;;
+    printSet(Set_E);
+    std::cout << "Для вычисления понадобилось " << stop-start << " тиков времени или " << ((float)(stop-start)) / CLOCKS_PER_SEC << " секунд.n" << endl;
+
+}
+
 void task()
 {
     cout<<"Исходные данные для задания"<<endl;
@@ -233,17 +278,14 @@ void task()
     //E = (A пересечение B) \ (C пересечение D) - по всем вопросам по решению пиши на
     //                         i v a n p r o s h [c о б а к а] g m a i l . c o m
     cout << "Результат при использовании массивов" << endl;
-    int t = clock();
     arrays();
-    std::cout << "Для вычисления понадобилось " << t << " тиков времени или " << ((float)t) / CLOCKS_PER_SEC << " секунд.n" << endl;
     cout << "Результат при использовании списков" << endl;
-    //t = clock();
     lists();
-    //std::cout << "Для вычисления понадобилось " << t << " тиков времени или " << ((float)t) / CLOCKS_PER_SEC << " секунд.n" << endl;
     cout << "Результат при использовании массивов бит" << endl;
-    t = clock();
     bits();
-    std::cout << "Для вычисления понадобилось " << t << " тиков времени или " << ((float)t) / CLOCKS_PER_SEC << " секунд.n" << endl;
+    cout << "Результат при использовании машинных слов" << endl;
+    words();
+
 }
 
 void fillingSet(char* buf, int max_size)
