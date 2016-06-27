@@ -22,6 +22,9 @@ int main(int argc, char *argv[])
     MyTree.MakeTree();
     MyTree.OutTree();
     cout << endl << "Кол-во листьев на самом нижнем уровне имеющем листья: " << MyTree.CountLastLeafs() << endl;
+
+    _getch();
+
     return 0;
 }
 

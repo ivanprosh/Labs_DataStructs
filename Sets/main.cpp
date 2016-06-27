@@ -3,6 +3,8 @@
 #include <ctype.h>
 #include <cstdio>
 #include <new>
+#include <conio.h>
+#include <ctime>
 
 using namespace std;
 
@@ -159,7 +161,62 @@ void lists()
     delete LC;
     delete LD;
 }
+void fillbits(char* source, bool* dest)
+{
+    int i=0;
+    while(source[i])
+    {
+        dest[int(source[i]-'А')] = true;
+        //cout << source[i]-'А' << ' ';
+        i++;
+    }
+    cout << endl;
+}
 
+void bits()
+{
+    const short bit_size = 256;
+    //массивы битов
+    bool temp1[bit_size],temp2[bit_size],result;
+    memset(temp1,0,bit_size);
+    memset(temp2,0,bit_size);
+
+    bool* bitSetA = new bool[bit_size];
+    bool* bitSetB = new bool[bit_size];
+    bool* bitSetC = new bool[bit_size];
+    bool* bitSetD = new bool[bit_size];
+
+    memset(bitSetA,0,bit_size);
+    memset(bitSetB,0,bit_size);
+    memset(bitSetC,0,bit_size);
+    memset(bitSetD,0,bit_size);
+    memset(Set_E,0,max_size);
+
+    fillbits(Set_A,bitSetA);
+    fillbits(Set_B,bitSetB);
+    fillbits(Set_C,bitSetC);
+    fillbits(Set_D,bitSetD);
+
+    int j = 0;
+    for(int i=0;i<bit_size;i++)
+    {
+        temp1[i] = bitSetA[i] && bitSetB[i];
+        temp2[i] = bitSetC[i] && bitSetD[i];
+        if(!temp2[i] && temp1[i])
+        {
+           result = i;
+           Set_E[j++] = result +'А';
+        }
+    }
+
+    cout << "Результирующее множество E: "<<endl;;
+    printSet(Set_E);
+
+    delete bitSetA;
+    delete bitSetB;
+    delete bitSetC;
+    delete bitSetD;
+}
 void task()
 {
     cout<<"Исходные данные для задания"<<endl;
@@ -176,9 +233,17 @@ void task()
     //E = (A пересечение B) \ (C пересечение D) - по всем вопросам по решению пиши на
     //                         i v a n p r o s h [c о б а к а] g m a i l . c o m
     cout << "Результат при использовании массивов" << endl;
+    int t = clock();
     arrays();
+    std::cout << "Для вычисления понадобилось " << t << " тиков времени или " << ((float)t) / CLOCKS_PER_SEC << " секунд.n" << endl;
     cout << "Результат при использовании списков" << endl;
+    //t = clock();
     lists();
+    //std::cout << "Для вычисления понадобилось " << t << " тиков времени или " << ((float)t) / CLOCKS_PER_SEC << " секунд.n" << endl;
+    cout << "Результат при использовании массивов бит" << endl;
+    t = clock();
+    bits();
+    std::cout << "Для вычисления понадобилось " << t << " тиков времени или " << ((float)t) / CLOCKS_PER_SEC << " секунд.n" << endl;
 }
 
 void fillingSet(char* buf, int max_size)
@@ -225,28 +290,29 @@ int main(int argc, char *argv[])
     SetConsoleCP(1251);//для корректного отображения русских букв в консоли, кодировка windows cp-1251
     SetConsoleOutputCP(1251); //
     char x;
-    while(true)
-    {
-       cout << endl << "Выбор варианта заполнения множества" << endl;
-       cout << "1. Инициализация" << endl;
-       cout << "2. Ввод пользователя" << endl;
-       cout << "3. Выход" << endl;
-       cin.get(x);
-       switch (x) {
-       case '1':
-           init();
-           return 0;
-       case '2':
-           userFilling();
-           return 0;
-       case '3':
-           return 0;
-       default:
-           cout << "Недопустимый пункт меню";
-       }
 
+    cout << endl << "Выбор варианта заполнения множества" << endl;
+    cout << "1. Инициализация" << endl;
+    cout << "2. Ввод пользователя" << endl;
+    cout << "3. Выход" << endl;
+    cin.get(x);
+
+    switch (x) {
+    case '1':
+        init();
+        break;
+        //return 0;
+    case '2':
+        userFilling();
+        break;
+        //return 0;
+    case '3':
+        return 0;
+    default:
+        cout << "Недопустимый пункт меню";
     }
 
-    return 0;
+   _getch();
+   return 0;
 }
 
